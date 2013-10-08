@@ -1,6 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>Latin (transliterated) Greek to Unicode Greek Converter</title>
+<meta charset="UTF-8">
 <script type="text/javascript">
 function inserttextatcursor(field, insert) {
 // http://parentnode.org/javascript/working-with-the-cursor-position/
@@ -72,7 +74,6 @@ function setCaretTo(obj, pos) {
     padding: 2%;
     vertical-align: top;
     width: 63%;
-    *display: inline;  
   }
   #sidebar {
     display: inline-block;
@@ -80,7 +81,6 @@ function setCaretTo(obj, pos) {
     vertical-align: top;
     border-left: 1px solid #666666;
     width: 30%;
-    *display: inline;
   }
   #latin {
     width: 100%;
@@ -99,36 +99,35 @@ function setCaretTo(obj, pos) {
 <div id="wrapper">
 <div id="titlebar">
 <h1>Greek Transliterator</h1>
-<p><big>Convert from Latin alphabet to Greek alphabet</big></p>
+<p>Convert from Latin alphabet to Greek alphabet</p>
 </div>
 <div id="content">
 <?php
-include_once(getenv('DOCUMENT_ROOT') . '/phplib/' . 'lib_general.php');
-include_once(getenv('DOCUMENT_ROOT') . '/phplib/' . 'lib_tlg.php');
+include_once('./lib_tlg.php');
  
 if ($_POST['latin']) {
-  $latin = LF_Gpc2Internal($_POST['latin']);
-  $greek = TLG_Latin2Unicode($latin);
+  $latin = TLG_Gpc2Internal($_POST['latin']);
+  $greek = TLG_Latin2Utf($latin);
 }
 
 ?>
 <form action="<?= getenv('SCRIPT_NAME'); ?>" method="post" accept-charset="utf-8">
 <input type="hidden" name="enforceutf8" value="&#307;">
 <p>
-<input name="eta" type="button" id="eta" value="ê" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'ê');"> 
-<input name="capeta" type="button" id="capeta" value="Ê" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ê');"> 
-<input name="omega" type="button" id="omega" value="ô" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'ô');"> 
-<input name="capomega" type="button" id="capomega" value="Ô" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ô');"> 
+<input name="eta" type="button" id="eta" value="Ãª" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ãª');"> 
+<input name="capeta" type="button" id="capeta" value="ÃŠ" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'ÃŠ');"> 
+<input name="omega" type="button" id="omega" value="Ã´" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ã´');"> 
+<input name="capomega" type="button" id="capomega" value="Ã”" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ã”');"> 
 </p>
 <textarea name="latin" id="latin" rows="10" cols="60">
-<?= LF_HtmlSpecialChars($latin); ?>
+<?= htmlspecialchars($latin); ?>
 </textarea>
 <p style="text-align: right"><input type="submit" value="Convert" /></p>
 </form>
 <?
   if ($greek) {
     echo '<p><b>Result:</b></p><div id="outputcontainer">' .
-         LF_HtmlSpecialChars($greek, false, true) .
+         TLG_Text2Html($greek) .
          '</div>';
   }
 ?>  
@@ -136,17 +135,17 @@ if ($_POST['latin']) {
 <div id="sidebar">
 <p><b>Example input:</b>
 
-<p>ploion - fulakê - artos - stauros - prosôpon - adelfos - probaton - nefelê</p>
+<p>ploion - fulakÃª - artos - stauros - prosÃ´pon - adelfos - probaton - nefelÃª</p>
 
-<p>alpha - bêta - gamma - delta - epsilon - zêta - êta - thêta - iôta - kappa - lambda - mu - nu - xi - omikron - pi - rho - sigma - tau - upsilon - phi - chi - psi - ômega</p>
+<p>alpha - bÃªta - gamma - delta - epsilon - zÃªta - Ãªta - thÃªta - iÃ´ta - kappa - lambda - mu - nu - xi - omikron - pi - rho - sigma - tau - upsilon - phi - chi - psi - Ã´mega</p>
 
-<p>ALPHA - BÊTA - GAMMA - DELTA - EPSILON - ZÊTA - ÊTA - THÊTA - IÔTA - KAPPA - LAMBDA - MU - NU - XI - OMIKRON - PI - RHO - SIGMA - TAU - UPSILON - PHI - CHI - PSI - ÔMEGA</p>
+<p>ALPHA - BÃŠTA - GAMMA - DELTA - EPSILON - ZÃŠTA - ÃŠTA - THÃŠTA - IÃ”TA - KAPPA - LAMBDA - MU - NU - XI - OMIKRON - PI - RHO - SIGMA - TAU - UPSILON - PHI - CHI - PSI - Ã”MEGA</p>
 
-<p>EN ARCHÊ ên ho logos, kai ho logos ên pros ton theon, kai theos ên ho logos. 
-Houtos ên en archêi pros ton theon. 
-panta di' autou egeneto, kai chôris autou egeneto oude hen. 
-ho gegonen en autôi zôê ên, kai hê zôê
-ên to phôs tôn anthrôpôn: kai to phôs en têi skotiai phainei, kai hê skotia auto ou katelaben.
+<p>EN ARCHÃŠ Ãªn ho logos, kai ho logos Ãªn pros ton theon, kai theos Ãªn ho logos. 
+Houtos Ãªn en archÃªi pros ton theon. 
+panta di' autou egeneto, kai chÃ´ris autou egeneto oude hen. 
+ho gegonen en autÃ´i zÃ´Ãª Ãªn, kai hÃª zÃ´Ãª
+Ãªn to phÃ´s tÃ´n anthrÃ´pÃ´n: kai to phÃ´s en tÃªi skotiai phainei, kai hÃª skotia auto ou katelaben.
 </p>
 </div>
 </div>
