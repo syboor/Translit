@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+  error_reporting(E_ALL & ~E_NOTICE); // Don't report notices
+?>
 <html>
 <head>
 <title>Latin (transliterated) Greek to Unicode Greek Converter</title>
@@ -106,7 +109,7 @@ function setCaretTo(obj, pos) {
 include_once('./lib_tlg.php');
  
 if ($_POST['latin']) {
-  $latin = TLG_Gpc2Internal($_POST['latin']);
+  $latin = $_POST['latin'];
   $greek = TLG_Latin2Utf($latin);
 }
 
@@ -120,14 +123,14 @@ if ($_POST['latin']) {
 <input name="capomega" type="button" id="capomega" value="Ô" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ô');"> 
 </p>
 <textarea name="latin" id="latin" rows="10" cols="60">
-<?= htmlspecialchars($latin); ?>
+<?= htmlspecialchars(@$latin); ?>
 </textarea>
 <p style="text-align: right"><input type="submit" value="Convert" /></p>
 </form>
-<?
+<?php
   if ($greek) {
     echo '<p><b>Result:</b></p><div id="outputcontainer">' .
-         TLG_Text2Html($greek) .
+         TLG_Text2Html(@$greek) .
          '</div>';
   }
 ?>  

@@ -1,15 +1,5 @@
 <?php
 
-setlocale(LC_CTYPE, 'nl_NL'); 
-  // This will make strtolower / strtoupper work on the ISO-8859-1 (latin-1) characters. 
-  
-function TLG_Gpc2Internal($input) {
-  if (get_magic_quotes_gpc()) {
-    $input = stripslashes($input);
-  }
-  return $input;
-}
-
 // Greek character names and their unicode values
 $TLG_TABLE = array(
   'alpha' => 945,
@@ -57,21 +47,9 @@ $TLG_MODIFIERS_TABLE = array(
   'iota' => 8126,
 );
 
-$TLG_ISO_INPUT = array(
-  'ecirc' => utf8_decode('ê'),
-  'Ecirc' => utf8_decode('Ê'),
-  'ocirc' => utf8_decode('ô'),
-  'Ocirc' => utf8_decode('Ô')
-);
-
 function TLG_Latin2Utf($latin) {
   global $TLG_TABLE, $TLG_ISO_INPUT;
   
-  /* Our special latin input characters our one byte in ISO-8859-1, but multiple bytes 
-     in UTF8. Iterating over UTF8 characters is rather slow, so we convert to ISO-8859-1
-     and use standard string operators. */  
-  $latin = utf8_decode($latin);
-
   $pos = 0;
   $length = strlen($latin);
   $greek = '';
