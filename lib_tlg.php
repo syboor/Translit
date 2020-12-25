@@ -51,78 +51,71 @@ function TLG_Latin2Utf($latin) {
   global $TLG_TABLE;
   
   $pos = 0;
-  $length = strlen($latin);
+  $length = mb_strlen($latin);
   $greek = '';
   
   while ($pos < $length) {
-    $char = $latin[$pos];
+    $char = mb_substr($latin, $pos, 1);
     $charcode = ord($char);
     
-    if ($char == '&' && $latin[$pos+1] == '#')  {
-      $charendpos = strpos($latin, ';', $pos);
-      $char = substr($latin, $pos, $charendpos - $pos + 1);
-      $charcode = intval(substr($latin, $pos + 2, $charendpos - $pos - 2));
-      $pos = $charendpos;
-    }
-
-    $nextchar = $latin[$pos + 1];
-
+    $nextchar = mb_substr($latin, $pos + 1, 1);
+    
     if (TLG_InputIsLetter($char)) {
-      if ($cap) $char = strtoupper($char);
+      if (@$cap) $char = mb_strtoupper($char);
       $ucp = ""; // unicode code point
       if ($char == "s" && ($nextchar == "" || $nextchar == " " || $nextchar == "\n" || $nextchar == "\r" || $nextchar == "\t")) { 
         // final sigma
         $ucp = $TLG_TABLE['sigmaf'];
-      } elseif ((strtolower($char) == "d") && (strtolower($nextchar) == "z")) {
+      } elseif ((mb_strtolower($char) == "d") && (mb_strtolower($nextchar) == "z")) {
         // dzeta -> zeta 
         // skip the d, do nothing
-      } elseif ((strtolower($char) == "t") && (strtolower($nextchar) == "h")) {
+      } elseif ((mb_strtolower($char) == "t") && (mb_strtolower($nextchar) == "h")) {
         $ucp = $TLG_TABLE['theta'];
         $pos++;
-      } elseif ((strtolower($char) == "k") && (strtolower($nextchar) == "s")) {
+      } elseif ((mb_strtolower($char) == "k") && (mb_strtolower($nextchar) == "s")) {
         $ucp = $TLG_TABLE['xi'];
         $pos++;
-      } elseif ((strtolower($char) == "p") && (strtolower($nextchar) == "h")) {
+      } elseif ((mb_strtolower($char) == "p") && (mb_strtolower($nextchar) == "h")) {
         $ucp = $TLG_TABLE['phi'];
         $pos++;
-      } elseif ((strtolower($char == "k") || (strtolower($char) == "c")) && (strtolower($nextchar) == "h")) {
+      } elseif ((mb_strtolower($char == "k") || (mb_strtolower($char) == "c")) && (mb_strtolower($nextchar) == "h")) {
         $ucp = $TLG_TABLE['chi'];
         $pos++;
-      } elseif ((strtolower($char) == "p") && (strtolower($nextchar) == "s")) {
+      } elseif ((mb_strtolower($char) == "p") && (mb_strtolower($nextchar) == "s")) {
         $ucp = $TLG_TABLE['psi'];
         $pos++;
-      } elseif (($alphapos = @stripos('abgdezê#iklmnxopr#stuf##ô', $char)) !== false) {
+      } elseif (($alphapos = @mb_stripos('abgdezÃª#iklmnxopr#stuf##Ã´', $char)) !== false) {
         // most of the alphabet (the part that can be transliterated with a single letter)
         $ucp = $alphapos + $TLG_TABLE['alpha'];
-      } elseif (strtolower($char) == "c") {
+      } elseif (mb_strtolower($char) == "c") {
         $ucp = $TLG_TABLE['kappa'];
 	    }
       
       if ($ucp) {
         $ucp = TLG_MatchCase($ucp, $char);
 
-        if ((strtolower($char) == 'r') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $rough = true;
-        if (TLG_IsVowel($ucp) && !$rough && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $smooth = true;
-        if ((strtolower($char) == 'ê' || strtolower($char) == 'ô') && (strtolower($nextchar) == 'i')) {
+        if ((mb_strtolower($char) == 'r') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $rough = true;
+        if (TLG_IsVowel($ucp) && !@$rough && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $smooth = true;
+        if ((mb_strtolower($char) == 'Ãª' || mb_strtolower($char) == 'Ã´') && (mb_strtolower($nextchar) == 'i')) {
         // alpha omitted because it can be both with adscript (kai) and with subscript...
         $iota = true;
         $pos++; 
 }
-        if (!$iota && (strtolower($char) == 'e' || strtolower($char) == 'a' || strtolower($char) == 'e' || strtolower($char) == 'o')  && (($nextalphapos = @strpos('a###e###i#####o#####u####', $nextchar)) !== false)) { 
+        if (!@$iota && (mb_strtolower($char) == 'e' || mb_strtolower($char) == 'a' || mb_strtolower($char) == 'e' || mb_strtolower($char) == 'o')  && (($nextalphapos = @strpos('a###e###i#####o#####u####', $nextchar)) !== false)) { 
           // TODO: get a good list of which combinations are diphtongues and which are two syllables
           // Two vowels: move accents to the next vowel.
           // NB: strpos, not stripos. Don't move accents if the next letter is uppercase.
           $greek .= TLG_MakeGlyph($ucp) . TLG_MakeGlyph($nextalphapos + $TLG_TABLE['alpha'], array('smooth' => $smooth, 'rough' => $rough));
           $pos++;
         } else {
-          $greek .= TLG_MakeGlyph($ucp, array('smooth' => $smooth, 'rough' => $rough, 'iota' => $iota));
+          $greek .= TLG_MakeGlyph($ucp, array('smooth' => @$smooth, 'rough' => @$rough, 'iota' => @$iota));
         }
       }  
       
     }
     
     if (TLG_InputIsModifier($char)) {
-      if ((strtolower($char) == 'h') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) { // Should only happen at beginning of word! (sanhedrin -> no breathing)
+      if ((mb_strtolower($char) == 'h') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) { // Should only happen at beginning of word! (sanhedrin -> no breathing)
         $rough = true;
         if ($char == 'H') $cap = true;
       }      
@@ -151,7 +144,7 @@ function TLG_Latin2Utf($latin) {
 }
 
 function TLG_InputIsLetter($input) {
-  if (@stripos('abcdefgiklmnoprstuvwxyzêô', $input) !== false) return true;
+  if (@mb_stripos('abcdefgiklmnoprstuvwxyzÃªÃ´', $input) !== false) return true;
   
   return false;
 }
@@ -189,7 +182,7 @@ function TLG_ToLower($ucp) {
 }
 
 function TLG_MatchCase($ucp, $char) {
-  if ($char == strtoupper($char)) {
+  if ($char == mb_strtoupper($char)) {
     return TLG_ToUpper($ucp);
   } else {
     return $ucp;
@@ -199,18 +192,18 @@ function TLG_MatchCase($ucp, $char) {
 function TLG_MakeGlyph($ucp, $modifiers = array()) {
   if ($modifiers) {
     global $TLG_TABLE, $TLG_MODIFIED_TABLE, $TLG_MODIFIERS_TABLE;
-    if ($TLG_MODIFIED_TABLE[$ucp]) {
+    if (@$TLG_MODIFIED_TABLE[$ucp]) {
       $iota = 0;
-      if ($modifiers['iota']) {
+      if (@$modifiers['iota']) {
         if ($ucp == $TLG_TABLE['alpha']) $iota = 128;
         if ($ucp == $TLG_TABLE['eta']) $iota = 112;
         if ($ucp == $TLG_TABLE['eta']) $iota = 112;
       }
-      if ($modifiers['smooth']) {
+      if (@$modifiers['smooth']) {
         return TLG_Ucp2utf8($TLG_MODIFIED_TABLE[$ucp]);
-      } elseif ($modifiers['rough']) {
+      } elseif (@$modifiers['rough']) {
         return TLG_Ucp2utf8($TLG_MODIFIED_TABLE[$ucp] + 1);
-      } elseif ($modifiers['iota']) {
+      } elseif (@$modifiers['iota']) {
         if ($ucp == $TLG_TABLE['alpha']) $ucp = 8115;
         if ($ucp == $TLG_TABLE['eta']) $ucp = 8131;
         if ($ucp == $TLG_TABLE['omega']) $ucp = 8179;
