@@ -48,7 +48,7 @@ $TLG_MODIFIERS_TABLE = array(
 );
 
 function TLG_Latin2Utf($latin) {
-  global $TLG_TABLE, $TLG_ISO_INPUT;
+  global $TLG_TABLE;
   
   $pos = 0;
   $length = strlen($latin);
@@ -91,22 +91,22 @@ function TLG_Latin2Utf($latin) {
       } elseif ((strtolower($char) == "p") && (strtolower($nextchar) == "s")) {
         $ucp = $TLG_TABLE['psi'];
         $pos++;
-      } elseif (($alphapos = @stripos('abgdez'.$TLG_ISO_INPUT['ecirc'].'#iklmnxopr#stuf##'.$TLG_ISO_INPUT['ocirc'], $char)) !== false) {
+      } elseif (($alphapos = @stripos('abgdezê#iklmnxopr#stuf##ô', $char)) !== false) {
         // most of the alphabet (the part that can be transliterated with a single letter)
         $ucp = $alphapos + $TLG_TABLE['alpha'];
       } elseif (strtolower($char) == "c") {
         $ucp = $TLG_TABLE['kappa'];
-	  }
+	    }
       
       if ($ucp) {
         $ucp = TLG_MatchCase($ucp, $char);
 
         if ((strtolower($char) == 'r') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $rough = true;
         if (TLG_IsVowel($ucp) && !$rough && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $smooth = true;
-        if ((strtolower($char) == $TLG_ISO_INPUT['ecirc'] || strtolower($char) == $TLG_ISO_INPUT['ocirc']) && (strtolower($nextchar) == 'i')) {
-  // alpha omitted because it can be both with adscript (kai) and with subscript...
-  $iota = true;
-  $pos++; 
+        if ((strtolower($char) == 'ê' || strtolower($char) == 'ô') && (strtolower($nextchar) == 'i')) {
+        // alpha omitted because it can be both with adscript (kai) and with subscript...
+        $iota = true;
+        $pos++; 
 }
         if (!$iota && (strtolower($char) == 'e' || strtolower($char) == 'a' || strtolower($char) == 'e' || strtolower($char) == 'o')  && (($nextalphapos = @strpos('a###e###i#####o#####u####', $nextchar)) !== false)) { 
           // TODO: get a good list of which combinations are diphtongues and which are two syllables
@@ -151,8 +151,7 @@ function TLG_Latin2Utf($latin) {
 }
 
 function TLG_InputIsLetter($input) {
-  global $TLG_ISO_INPUT;
-  if (@stripos('abcdefgiklmnoprstuvwxyz'.$TLG_ISO_INPUT['ecirc'].$TLG_ISO_INPUT['ocirc'], $input) !== false) return true;
+  if (@stripos('abcdefgiklmnoprstuvwxyzêô', $input) !== false) return true;
   
   return false;
 }
