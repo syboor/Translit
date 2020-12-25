@@ -6,6 +6,7 @@
 <head>
 <title>Latin (transliterated) Greek to Unicode Greek Converter</title>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script type="text/javascript">
 function inserttextatcursor(field, insert) {
 // http://parentnode.org/javascript/working-with-the-cursor-position/
@@ -52,18 +53,23 @@ function setCaretTo(obj, pos) {
 } 
 </script>
 <style type="text/css">
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap');
   body, div, p, th, td, li, dd {
     font-family: Trebuchet MS, Arial, sans-serif;
     font-size: 11px;
     line-height: 1.5;
     color: #333333;
   }
+  * {
+    box-sizing: border-box;
+  }
   body {
-    min-width: 780px;
+    max-width: 80em;
+    box-sizing: border-box;
   }
   #wrapper {
     text-align: left;
-    width: 780px;
+    max-width: 80em;
     margin-left: auto;
     margin-right: auto;
   }
@@ -89,11 +95,15 @@ function setCaretTo(obj, pos) {
     width: 100%;
   }
   #outputcontainer {
-    /* font-family: Aristarcoj, Arial, Helvetica, sans-serif; */
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 20px;
+    font-family: 'Noto Serif', serif;
+    font-size: 24px;
     border: 1px solid #999999;
     padding: 2px;
+  }
+  @media only screen and (max-width: 620px) {
+    #content, #sidebar {
+      width: 100%;
+    }
   }
 
 </style>
@@ -138,16 +148,16 @@ if ($_POST['latin']) {
 <div id="sidebar">
 <p><b>Example input:</b>
 
-<p>ploion - fulakê - artos - stauros - prosôpon - adelfos - probaton - nefelê</p>
+<p>ploion - fulakê - artos - stauros - prosôpon - adelfos - probaton - nefelê - ôidê</p>
 
 <p>alpha - bêta - gamma - delta - epsilon - zêta - êta - thêta - iôta - kappa - lambda - mu - nu - xi - omikron - pi - rho - sigma - tau - upsilon - phi - chi - psi - ômega</p>
 
 <p>ALPHA - BÊTA - GAMMA - DELTA - EPSILON - ZÊTA - ÊTA - THÊTA - IÔTA - KAPPA - LAMBDA - MU - NU - XI - OMIKRON - PI - RHO - SIGMA - TAU - UPSILON - PHI - CHI - PSI - ÔMEGA</p>
 
-<p>EN ARCHÊ ên ho logos, kai ho logos ên pros ton theon, kai theos ên ho logos. 
-Houtos ên en archêi pros ton theon. 
-panta di' autou egeneto, kai chôris autou egeneto oude hen. 
-ho gegonen en autôi zôê ên, kai hê zôê
+<p>EN ARCHÊI ên ho Logos, kai ho Logos ên pros ton Theon, kai Theos ên ho Logos. 
+Houtos ên en archêi pros ton Theon. 
+Panta di' autou egeneto, kai chôris autou egeneto oude hen. 
+Ho gegonen en autôi zôê ên, kai hê zôê
 ên to phôs tôn anthrôpôn: kai to phôs en têi skotiai phainei, kai hê skotia auto ou katelaben.
 </p>
 </div>

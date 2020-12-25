@@ -1,4 +1,10 @@
 <?php
+/*
+  TODO: iota subscript in fully capitalized words, i.e. ARCHEI 
+  See https://en.wikipedia.org/wiki/Iota_subscript for options.
+  
+ 
+*/
 
 // Greek character names and their unicode values
 $TLG_TABLE = array(
@@ -89,19 +95,21 @@ function TLG_Latin2Utf($latin) {
         $ucp = $alphapos + $TLG_TABLE['alpha'];
       } elseif (mb_strtolower($char) == "c") {
         $ucp = $TLG_TABLE['kappa'];
-	    }
+      }
       
       if ($ucp) {
         $ucp = TLG_MatchCase($ucp, $char);
 
         if ((mb_strtolower($char) == 'r') && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $rough = true;
         if (TLG_IsVowel($ucp) && !@$rough && ($prevchar == "" || $prevchar == " " || $prevchar == "\n" || $prevchar == "\r" || $prevchar == "\t")) $smooth = true;
-        if ((mb_strtolower($char) == 'ê' || mb_strtolower($char) == 'ô') && (mb_strtolower($nextchar) == 'i')) {
-        // alpha omitted because it can be both with adscript (kai) and with subscript...
-        $iota = true;
-        $pos++; 
-}
-        if (!@$iota && (mb_strtolower($char) == 'e' || mb_strtolower($char) == 'a' || mb_strtolower($char) == 'e' || mb_strtolower($char) == 'o')  && (($nextalphapos = @strpos('a###e###i#####o#####u####', $nextchar)) !== false)) { 
+        
+        // iota subscript: only do this for lowercase characters; for uppercase, just use a normal iota (in the case of the iota)
+        if (($char == 'ê' || $char == 'ô') && $nextchar == 'i') {
+          // alpha omitted because it can be both with adscript (kai) and with subscript...
+          $iota = true;
+          $pos++; 
+        }
+        if (!@$iota && (mb_strtolower($char) == 'e' || mb_strtolower($char) == 'a' || mb_strtolower($char) == 'e' || mb_strtolower($char) == 'o')  && (($nextalphapos = @mb_strpos('a###e###i#####o#####u####', $nextchar)) !== false)) { 
           // TODO: get a good list of which combinations are diphtongues and which are two syllables
           // Two vowels: move accents to the next vowel.
           // NB: strpos, not stripos. Don't move accents if the next letter is uppercase.
@@ -193,22 +201,29 @@ function TLG_MakeGlyph($ucp, $modifiers = array()) {
   if ($modifiers) {
     global $TLG_TABLE, $TLG_MODIFIED_TABLE, $TLG_MODIFIERS_TABLE;
     if (@$TLG_MODIFIED_TABLE[$ucp]) {
-      $iota = 0;
-      if (@$modifiers['iota']) {
-        if ($ucp == $TLG_TABLE['alpha']) $iota = 128;
-        if ($ucp == $TLG_TABLE['eta']) $iota = 112;
-        if ($ucp == $TLG_TABLE['eta']) $iota = 112;
-      }
       if (@$modifiers['smooth']) {
-        return TLG_Ucp2utf8($TLG_MODIFIED_TABLE[$ucp]);
+        $ucp = $TLG_MODIFIED_TABLE[$ucp];
       } elseif (@$modifiers['rough']) {
-        return TLG_Ucp2utf8($TLG_MODIFIED_TABLE[$ucp] + 1);
-      } elseif (@$modifiers['iota']) {
+        $ucp = $TLG_MODIFIED_TABLE[$ucp] + 1;
+      }
+
+      if (@$modifiers['iota']) {
+        // 'just' iota subscript
         if ($ucp == $TLG_TABLE['alpha']) $ucp = 8115;
         if ($ucp == $TLG_TABLE['eta']) $ucp = 8131;
         if ($ucp == $TLG_TABLE['omega']) $ucp = 8179;
-        return TLG_Ucp2utf8($ucp);
+        
+        // iota subscript + rough mark
+        if ($ucp == $TLG_MODIFIED_TABLE[$TLG_TABLE['eta']] + 1) $ucp = 8081;
+        if ($ucp == $TLG_MODIFIED_TABLE[$TLG_TABLE['omega']] + 1) $ucp = 8097;
+
+        // iota subscript + smooth mark
+        if ($ucp == $TLG_MODIFIED_TABLE[$TLG_TABLE['eta']]) $ucp = 8080;
+        if ($ucp == $TLG_MODIFIED_TABLE[$TLG_TABLE['omega']]) $ucp = 8096;
+        
       } 
+      return TLG_Ucp2utf8($ucp);
+      
       // todo: combina iota with breathing etc.
     } elseif ($modifiers['rough'] && $ucp == $TLG_TABLE['rho']){
       return TLG_Ucp2utf8(8165);
