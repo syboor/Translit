@@ -118,7 +118,7 @@ function setCaretTo(obj, pos) {
 <?php
 include_once('./lib_tlg.php');
  
-if ($_POST['latin']) {
+if (@$_POST['latin']) {
   $latin = $_POST['latin'];
   $greek = TLG_Latin2Utf($latin);
 }
@@ -133,12 +133,12 @@ if ($_POST['latin']) {
 <input name="capomega" type="button" id="capomega" value="Ô" style="font-weight: bold; width: 25px;" onClick="inserttextatcursor(document.getElementById('latin'), 'Ô');"> 
 </p>
 <textarea name="latin" id="latin" rows="10" cols="60">
-<?= htmlspecialchars(@$latin); ?>
+<?= htmlspecialchars(@$latin ?? ''); ?>
 </textarea>
 <p style="text-align: right"><input type="submit" value="Convert" /></p>
 </form>
 <?php
-  if ($greek) {
+  if (@$greek) {
     echo '<p><b>Result:</b></p><div id="outputcontainer">' .
          TLG_Text2Html(@$greek) .
          '</div>';
